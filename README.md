@@ -44,10 +44,10 @@
     <a href="#-getting-started">
       <img src="https://img.shields.io/badge/📖_Documentation-View_Guide-blue?style=for-the-badge" alt="Documentation" />
     </a>
-    <a href="https://github.com/Naval721/AyurSutra-CP/issues/new?template=bug_report.md">
+    <a href="https://github.com/Naval721/AyurSutra-App/issues/new?template=bug_report.md">
       <img src="https://img.shields.io/badge/🐛_Report_Bug-Open_Issue-red?style=for-the-badge" alt="Report Bug" />
     </a>
-    <a href="https://github.com/Naval721/AyurSutra-CP/issues/new?template=feature_request.md">
+    <a href="https://github.com/Naval721/AyurSutra-App/issues/new?template=feature_request.md">
       <img src="https://img.shields.io/badge/💡_Request_Feature-Suggest-purple?style=for-the-badge" alt="Request Feature" />
     </a>
   </p>
@@ -363,8 +363,8 @@ ayursutra/
 Clone the repository and install all dependencies:
 
 ```bash
-git clone https://github.com/Naval721/AyurSutra-CP.git
-cd AyurSutra-CP
+git clone https://github.com/Naval721/AyurSutra-App.git
+cd AyurSutra-App
 npm install
 ```
 
@@ -487,7 +487,7 @@ Distributed under the **MIT License**. See `LICENSE` for details.
 <div align="center">
   <sub>Built with care for holistic healthcare practitioners worldwide.</sub>
   <br /><br />
-  <a href="https://github.com/Naval721/AyurSutra-CP">
+  <a href="https://github.com/Naval721/AyurSutra-App">
     ⭐ <strong>Star AyurSutra on GitHub if you find this project inspiring!</strong> ⭐
   </a>
 </div>
