@@ -11,7 +11,7 @@ import { Surface } from '@/components/ui/Surface';
 import { fetchStaff } from '@/lib/api/auth';
 import { queryKeys } from '@/lib/api/keys';
 import { fetchPatient } from '@/lib/api/patients';
-import { formatDateShort, initials } from '@/lib/format';
+import { formatDateShort, formatHourRange, initials, titleCase } from '@/lib/format';
 import { useSessionStore } from '@/lib/store/session';
 import { reversed } from '@/lib/utils';
 
@@ -59,7 +59,7 @@ export default function PatientProfileScreen() {
             {patient.full_name}
           </Text.Paragraph>
           <Text.Paragraph type="body-sm" color="muted">
-            {patient.age} years · {patient.gender}
+            {patient.age} years · {titleCase(patient.gender)}
           </Text.Paragraph>
           <Text.Paragraph type="body-xs" color="muted">
             {patient.phone}
@@ -161,7 +161,7 @@ export default function PatientProfileScreen() {
             {clinic.phone}
           </Text.Paragraph>
           <Text.Paragraph type="body-xs" color="muted">
-            Open {clinic.opening_hour}:00 to {clinic.closing_hour}:00
+            Open {formatHourRange(clinic.opening_hour, clinic.closing_hour)}
           </Text.Paragraph>
         </Surface>
       </View>

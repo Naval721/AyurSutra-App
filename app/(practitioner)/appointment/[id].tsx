@@ -17,6 +17,7 @@ import {
 } from '@/lib/api/appointments';
 import { queryKeys } from '@/lib/api/keys';
 import { APPOINTMENT_TYPE_LABEL, formatDateLong, formatTimeRange, titleCase } from '@/lib/format';
+import { useSessionStore } from '@/lib/store/session';
 import type { AppointmentStatus } from '@/lib/types';
 
 const NEXT_STATUS: Partial<
@@ -39,9 +40,17 @@ const NEXT_STATUS: Partial<
 
 export default function AppointmentDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const session = useSessionStore((state) => state.session);
   const queryClient = useQueryClient();
+  const [prevId, setPrevId] = useState(id);
   const [notesOverride, setNotesOverride] = useState<string | null>(null);
   const [savedNote, setSavedNote] = useState(false);
+
+  if (prevId !== id) {
+    setPrevId(id);
+    setNotesOverride(null);
+    setSavedNote(false);
+  }
 
   const appointmentQuery = useQuery({
     queryKey: queryKeys.appointment(id),
@@ -138,7 +147,9 @@ export default function AppointmentDetailScreen() {
               key={action.status}
               size="sm"
               variant={
-                action.status === 'completed' || action.status === 'checked_in'
+                action.status === 'completed' ||
+                action.status === 'checked_in' ||
+                action.status === 'in_progress'
                   ? 'primary'
                   : 'secondary'
               }
@@ -185,18 +196,20 @@ export default function AppointmentDetailScreen() {
             >
               <Button.Label>Open record</Button.Label>
             </Button>
-            <Button
-              size="sm"
-              className="flex-1"
-              onPress={() =>
-                router.push({
-                  pathname: '/(practitioner)/prescription/new',
-                  params: { patientId: patient.id },
-                })
-              }
-            >
-              <Button.Label>Prescribe</Button.Label>
-            </Button>
+            {session?.profile.role !== 'therapist' ? (
+              <Button
+                size="sm"
+                className="flex-1"
+                onPress={() =>
+                  router.push({
+                    pathname: '/(practitioner)/prescription/new',
+                    params: { patientId: patient.id },
+                  })
+                }
+              >
+                <Button.Label>Prescribe</Button.Label>
+              </Button>
+            ) : null}
           </View>
         </Surface>
       </View>

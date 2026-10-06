@@ -8,7 +8,7 @@ import { SectionHeader } from '@/components/ui/SectionHeader';
 import { Surface } from '@/components/ui/Surface';
 import { fetchStaff } from '@/lib/api/auth';
 import { queryKeys } from '@/lib/api/keys';
-import { initials, titleCase } from '@/lib/format';
+import { formatHourRange, initials, titleCase } from '@/lib/format';
 import { useSessionStore } from '@/lib/store/session';
 
 export default function PractitionerProfileScreen() {
@@ -87,8 +87,8 @@ export default function PractitionerProfileScreen() {
             {clinic.phone} · {clinic.timezone}
           </Text.Paragraph>
           <Text.Paragraph type="body-xs" color="muted">
-            Open {clinic.opening_hour}:00 to {clinic.closing_hour}:00 · Break{' '}
-            {clinic.break_window[0]}:00 to {clinic.break_window[1]}:00
+            Open {formatHourRange(clinic.opening_hour, clinic.closing_hour)} · Break{' '}
+            {formatHourRange(clinic.break_window[0], clinic.break_window[1])}
           </Text.Paragraph>
           <Text.Paragraph type="body-xs" color="muted">
             Therapy rooms: {clinic.therapy_rooms.join(', ')}

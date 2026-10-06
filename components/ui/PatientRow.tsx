@@ -1,8 +1,9 @@
 import { View } from 'react-native';
-import { PressableFeedback, Text } from 'heroui-native';
+import { Text } from 'heroui-native';
 import { ChevronRight } from 'lucide-react-native';
 
 import { DoshaBadge } from '@/components/ui/Dosha';
+import { Surface } from '@/components/ui/Surface';
 import { initials } from '@/lib/format';
 import { BRAND_HEX } from '@/lib/theme';
 import type { Patient } from '@/lib/types';
@@ -17,8 +18,12 @@ export interface PatientRowProps {
 export function PatientRow({ patient, onPress, subtitle }: PatientRowProps) {
   const latest = patient.prakriti_history.at(-1);
 
-  const body = (
-    <View className="border-border bg-surface flex-row items-center gap-3 rounded-2xl border p-4">
+  return (
+    <Surface
+      className="flex-row items-center gap-3"
+      accessibilityLabel={`Open ${patient.full_name}`}
+      onPress={onPress}
+    >
       <View className="bg-saffron-soft h-11 w-11 items-center justify-center rounded-full">
         <Text.Paragraph type="body-sm" weight="bold" className="text-bark">
           {initials(patient.full_name)}
@@ -38,18 +43,6 @@ export function PatientRow({ patient, onPress, subtitle }: PatientRowProps) {
       </View>
 
       {onPress ? <ChevronRight color={BRAND_HEX.barkSoft} size={18} /> : null}
-    </View>
-  );
-
-  if (!onPress) return body;
-
-  return (
-    <PressableFeedback
-      accessibilityRole="button"
-      accessibilityLabel={`Open ${patient.full_name}`}
-      onPress={onPress}
-    >
-      {body}
-    </PressableFeedback>
+    </Surface>
   );
 }

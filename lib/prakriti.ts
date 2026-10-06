@@ -178,9 +178,11 @@ export function scorePrakriti(answers: Record<string, Dosha>): PrakritiResult {
 
   const dominant = sorted[0][0];
   const constitution =
-    sorted[1][1] >= sorted[0][1] - 12
-      ? `${LABEL[dominant]}-${LABEL[sorted[1][0]]}`
-      : LABEL[dominant];
+    sorted[2][1] >= sorted[0][1] - 12
+      ? 'Vata-Pitta-Kapha (Tridoshic)'
+      : sorted[1][1] >= sorted[0][1] - 12
+        ? `${LABEL[dominant]}-${LABEL[sorted[1][0]]}`
+        : LABEL[dominant];
 
   return { scores, dominant, constitution };
 }

@@ -18,8 +18,10 @@ function summarise(patient: Patient): PatientSummary {
     .filter(
       (entry) =>
         entry.patient_id === patient.id &&
-        new Date(entry.starts_at).getTime() >= now &&
-        entry.status !== 'cancelled',
+        (entry.status === 'scheduled' ||
+          entry.status === 'checked_in' ||
+          entry.status === 'in_progress') &&
+        new Date(entry.ends_at).getTime() >= now,
     )
     .sort((a, b) => a.starts_at.localeCompare(b.starts_at))[0];
   const latest = patient.prakriti_history.at(-1) ?? null;

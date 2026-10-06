@@ -1,12 +1,13 @@
 import { FlatList, View } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { Button, PressableFeedback, Text } from 'heroui-native';
+import { Button, Text } from 'heroui-native';
 import { ChevronRight, FileText } from 'lucide-react-native';
 
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/States';
 import { Screen } from '@/components/ui/Screen';
 import { StatusChip } from '@/components/ui/StatusChip';
+import { Surface } from '@/components/ui/Surface';
 import { queryKeys } from '@/lib/api/keys';
 import { fetchPrescriptionsByDoctor } from '@/lib/api/prescriptions';
 import { formatDateShort } from '@/lib/format';
@@ -47,8 +48,8 @@ export default function PractitionerPrescriptionsScreen() {
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 32, gap: 12 }}
           showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
-            <PressableFeedback
-              accessibilityRole="button"
+            <Surface
+              className="flex-row items-center gap-3"
               accessibilityLabel={`Open prescription for ${item.patientName}`}
               onPress={() =>
                 router.push({
@@ -57,24 +58,22 @@ export default function PractitionerPrescriptionsScreen() {
                 })
               }
             >
-              <View className="border-border bg-surface flex-row items-center gap-3 rounded-2xl border p-4">
-                <View className="flex-1 gap-1">
-                  <Text.Paragraph weight="semibold" className="text-foreground">
-                    {item.patientName}
+              <View className="flex-1 gap-1">
+                <Text.Paragraph weight="semibold" className="text-foreground">
+                  {item.patientName}
+                </Text.Paragraph>
+                <Text.Paragraph type="body-xs" color="muted" numberOfLines={1}>
+                  {item.prescription.items.map((entry) => entry.name).join(', ')}
+                </Text.Paragraph>
+                <View className="mt-1 flex-row items-center gap-2">
+                  <StatusChip kind="prescription" status={item.prescription.status} />
+                  <Text.Paragraph type="body-xs" color="muted">
+                    {formatDateShort(item.prescription.issued_at)}
                   </Text.Paragraph>
-                  <Text.Paragraph type="body-xs" color="muted" numberOfLines={1}>
-                    {item.prescription.items.map((entry) => entry.name).join(', ')}
-                  </Text.Paragraph>
-                  <View className="mt-1 flex-row items-center gap-2">
-                    <StatusChip kind="prescription" status={item.prescription.status} />
-                    <Text.Paragraph type="body-xs" color="muted">
-                      {formatDateShort(item.prescription.issued_at)}
-                    </Text.Paragraph>
-                  </View>
                 </View>
-                <ChevronRight color={BRAND_HEX.barkSoft} size={18} />
               </View>
-            </PressableFeedback>
+              <ChevronRight color={BRAND_HEX.barkSoft} size={18} />
+            </Surface>
           )}
           ListEmptyComponent={
             <EmptyState

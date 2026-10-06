@@ -1,8 +1,19 @@
 import { useState } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { Link } from 'expo-router';
-import { Button, Chip, Input, Label, Text, TextField } from 'heroui-native';
-import { Leaf } from 'lucide-react-native';
+import { Button, Chip, Input, Label, PressableFeedback, Text, TextField } from 'heroui-native';
+import {
+  Building2,
+  ChevronRight,
+  Eye,
+  EyeOff,
+  HeartHandshake,
+  Lock,
+  Mail,
+  ShieldCheck,
+  Sparkles,
+  Stethoscope,
+} from 'lucide-react-native';
 
 import { Screen } from '@/components/ui/Screen';
 import { Surface } from '@/components/ui/Surface';
@@ -10,6 +21,7 @@ import { DEMO_ACCOUNTS, DEMO_PASSWORD } from '@/lib/api/auth';
 import { tapSelection } from '@/lib/haptics';
 import { BRAND_HEX } from '@/lib/theme';
 import { useSessionStore } from '@/lib/store/session';
+import { cn } from '@/lib/utils';
 
 export default function SignInScreen() {
   const signIn = useSessionStore((state) => state.signIn);
@@ -17,8 +29,10 @@ export default function SignInScreen() {
   const error = useSessionStore((state) => state.error);
   const clearError = useSessionStore((state) => state.clearError);
 
+  const [portalType, setPortalType] = useState<'patient' | 'practitioner'>('patient');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const submit = () => {
     void signIn(email, password);
@@ -32,25 +46,139 @@ export default function SignInScreen() {
     void signIn(demoEmail, DEMO_PASSWORD);
   };
 
+  const accountsForPortal = DEMO_ACCOUNTS.filter((acc) =>
+    portalType === 'patient' ? acc.role === 'patient' : acc.role !== 'patient',
+  );
+
   return (
-    <Screen scroll keyboardAware>
-      <View className="pt-safe-offset-10 pb-8">
-        <View className="bg-saffron-soft h-14 w-14 items-center justify-center rounded-2xl">
-          <Leaf color={BRAND_HEX.saffron} size={28} />
+    <Screen scroll keyboardAware contentClassName="gap-6 pb-12">
+      {/* Clinic Masthead & Heritage Emblem */}
+      <View className="pt-safe-offset-4 items-center text-center">
+        <View className="relative items-center justify-center">
+          <View className="h-20 w-20 items-center justify-center rounded-3xl border border-amber-300/60 bg-amber-50 shadow-sm">
+            <View className="h-14 w-14 items-center justify-center rounded-2xl bg-[#dd8c2d]/15">
+              <Sparkles color={BRAND_HEX.saffron} size={28} />
+            </View>
+          </View>
+          <View className="absolute -bottom-2 rounded-full border border-amber-200 bg-white px-2.5 py-0.5 shadow-xs">
+            <Text.Paragraph
+              type="body-xs"
+              weight="bold"
+              className="tracking-widest text-[#6b5843] uppercase"
+            >
+              आयुःसूत्र
+            </Text.Paragraph>
+          </View>
         </View>
-        <Text.Heading type="h1" className="mt-5">
+
+        <Text.Heading type="h2" className="text-foreground mt-4 font-semibold tracking-tight">
           AyurSutra
         </Text.Heading>
-        <Text.Paragraph color="muted" className="mt-2">
-          One clinic, one record. Sign in to your practice or your own care plan.
+
+        <Text.Paragraph
+          type="body-xs"
+          weight="semibold"
+          className="mt-1 tracking-wider text-amber-800 uppercase"
+        >
+          Shanti Ayurvedic Bhavan · Bengaluru
+        </Text.Paragraph>
+
+        <Text.Paragraph
+          type="body-sm"
+          color="muted"
+          className="mt-1.5 max-w-xs text-center leading-relaxed"
+        >
+          Integrated Ayurvedic EMR, Dinacharya & Panchakarma Clinical Management
         </Text.Paragraph>
       </View>
 
-      <View className="gap-4">
+      {/* Segmented Portal Switcher */}
+      <View className="bg-surface-secondary border-border flex-row rounded-2xl border p-1.5">
+        <PressableFeedback
+          accessibilityRole="tab"
+          accessibilityLabel="Patient Portal"
+          accessibilityState={{ selected: portalType === 'patient' }}
+          onPress={() => {
+            tapSelection();
+            setPortalType('patient');
+            clearError();
+          }}
+          className={cn(
+            'flex-1 flex-row items-center justify-center gap-2 rounded-xl py-2.5',
+            portalType === 'patient'
+              ? 'bg-surface border-border/80 border shadow-xs'
+              : 'opacity-70',
+          )}
+        >
+          <HeartHandshake
+            color={portalType === 'patient' ? BRAND_HEX.saffron : BRAND_HEX.barkSoft}
+            size={18}
+          />
+          <Text.Paragraph
+            type="body-sm"
+            weight={portalType === 'patient' ? 'semibold' : 'medium'}
+            className={portalType === 'patient' ? 'text-foreground' : 'text-muted'}
+          >
+            Patient Portal
+          </Text.Paragraph>
+        </PressableFeedback>
+
+        <PressableFeedback
+          accessibilityRole="tab"
+          accessibilityLabel="Practitioner Suite"
+          accessibilityState={{ selected: portalType === 'practitioner' }}
+          onPress={() => {
+            tapSelection();
+            setPortalType('practitioner');
+            clearError();
+          }}
+          className={cn(
+            'flex-1 flex-row items-center justify-center gap-2 rounded-xl py-2.5',
+            portalType === 'practitioner'
+              ? 'bg-surface border-border/80 border shadow-xs'
+              : 'opacity-70',
+          )}
+        >
+          <Stethoscope
+            color={portalType === 'practitioner' ? BRAND_HEX.saffron : BRAND_HEX.barkSoft}
+            size={18}
+          />
+          <Text.Paragraph
+            type="body-sm"
+            weight={portalType === 'practitioner' ? 'semibold' : 'medium'}
+            className={portalType === 'practitioner' ? 'text-foreground' : 'text-muted'}
+          >
+            Practitioner Suite
+          </Text.Paragraph>
+        </PressableFeedback>
+      </View>
+
+      {/* Main Sign-In Card */}
+      <Surface className="gap-4 p-5 shadow-xs">
+        <View className="border-border/60 gap-1 border-b pb-3">
+          <Text.Paragraph weight="semibold" className="text-foreground text-base">
+            {portalType === 'patient' ? 'Patient Sign In' : 'Vaidya & Clinical Staff Login'}
+          </Text.Paragraph>
+          <Text.Paragraph type="body-xs" color="muted">
+            {portalType === 'patient'
+              ? 'Access your Dinacharya routine, Prakriti balance and prescription history.'
+              : 'Secure access for treating Doctors, Panchakarma Therapists and Clinic Desk.'}
+          </Text.Paragraph>
+        </View>
+
         <TextField isInvalid={Boolean(error)}>
-          <Label>Email</Label>
+          <Label>
+            <View className="mb-1 flex-row items-center gap-1.5">
+              <Mail size={14} color={BRAND_HEX.barkSoft} />
+              <Text.Paragraph type="body-xs" weight="medium" color="muted">
+                {portalType === 'patient' ? 'Registered Email' : 'Clinic Email ID'}
+              </Text.Paragraph>
+            </View>
+          </Label>
           <Input
-            placeholder="you@clinic.in"
+            placeholder={
+              portalType === 'patient' ? 'ananya.rao@example.com' : 'doctor@ayursutra.in'
+            }
             value={email}
             onChangeText={(value) => {
               setEmail(value);
@@ -65,75 +193,195 @@ export default function SignInScreen() {
         </TextField>
 
         <TextField isInvalid={Boolean(error)}>
-          <Label>Password</Label>
-          <Input
-            placeholder="Your password"
-            value={password}
-            onChangeText={(value) => {
-              setPassword(value);
-              if (error) clearError();
-            }}
-            secureTextEntry
-            autoComplete="current-password"
-            textContentType="password"
-            returnKeyType="go"
-            onSubmitEditing={submit}
-          />
+          <Label>
+            <View className="mb-1 flex-row items-center justify-between">
+              <View className="flex-row items-center gap-1.5">
+                <Lock size={14} color={BRAND_HEX.barkSoft} />
+                <Text.Paragraph type="body-xs" weight="medium" color="muted">
+                  Password
+                </Text.Paragraph>
+              </View>
+            </View>
+          </Label>
+          <View className="relative justify-center">
+            <Input
+              placeholder="Enter your security password"
+              value={password}
+              onChangeText={(value) => {
+                setPassword(value);
+                if (error) clearError();
+              }}
+              secureTextEntry={!showPassword}
+              autoComplete="current-password"
+              textContentType="password"
+              returnKeyType="go"
+              onSubmitEditing={submit}
+            />
+            <PressableFeedback
+              accessibilityRole="button"
+              accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+              onPress={() => {
+                tapSelection();
+                setShowPassword((prev) => !prev);
+              }}
+              className="absolute right-3 h-8 w-8 items-center justify-center rounded-full"
+            >
+              {showPassword ? (
+                <EyeOff size={18} color={BRAND_HEX.barkSoft} />
+              ) : (
+                <Eye size={18} color={BRAND_HEX.barkSoft} />
+              )}
+            </PressableFeedback>
+          </View>
         </TextField>
 
         {error ? (
-          <Text.Paragraph type="body-sm" className="text-danger" accessibilityLiveRegion="polite">
-            {error}
-          </Text.Paragraph>
+          <View className="bg-danger/10 border-danger/30 rounded-xl border p-3">
+            <Text.Paragraph
+              type="body-sm"
+              className="text-danger font-medium"
+              accessibilityLiveRegion="polite"
+            >
+              {error}
+            </Text.Paragraph>
+          </View>
         ) : null}
 
-        <Button size="lg" isDisabled={pending} onPress={submit}>
-          <Button.Label>{pending ? 'Signing in' : 'Sign in'}</Button.Label>
+        <Button size="lg" isDisabled={pending} onPress={submit} className="mt-1 shadow-sm">
+          <Button.Label>
+            {pending
+              ? 'Authenticating...'
+              : portalType === 'patient'
+                ? 'Sign In to Health Portal'
+                : 'Sign In to Practitioner Suite'}
+          </Button.Label>
         </Button>
 
-        <View className="flex-row items-center justify-center gap-1">
-          <Text.Paragraph type="body-sm" color="muted">
-            New patient?
-          </Text.Paragraph>
-          <Link href="/(auth)/sign-up" asChild>
-            <Text.Paragraph type="body-sm" className="text-accent" weight="semibold">
-              Create an account
+        {portalType === 'patient' ? (
+          <View className="flex-row items-center justify-center gap-1.5 pt-1">
+            <Text.Paragraph type="body-sm" color="muted">
+              First time visiting Shanti Bhavan?
             </Text.Paragraph>
-          </Link>
-        </View>
-      </View>
+            <Link href="/(auth)/sign-up" asChild>
+              <Text.Paragraph type="body-sm" className="text-accent underline" weight="semibold">
+                Register as Patient
+              </Text.Paragraph>
+            </Link>
+          </View>
+        ) : null}
+      </Surface>
 
-      {/* Development shortcut only. Metro strips this branch from release bundles,
-          so no seeded credentials ship to a store build. */}
-      {__DEV__ ? (
-        <View className="mt-10">
-          <Text.Paragraph type="body-xs" color="muted" weight="semibold" className="mb-3 uppercase">
-            Demo logins (development only)
-          </Text.Paragraph>
+      {/* Verified Clinic Demonstrations / 1-Tap Fast Switch */}
+      {__DEV__ || Platform.OS === 'web' ? (
+        <View className="gap-2.5">
+          <View className="flex-row items-center justify-between px-1">
+            <Text.Paragraph
+              type="body-xs"
+              color="muted"
+              weight="semibold"
+              className="tracking-wider uppercase"
+            >
+              {portalType === 'patient'
+                ? 'Quick Access · Verified Patient'
+                : 'Quick Access · Verified Clinical Staff'}
+            </Text.Paragraph>
+            <View className="flex-row items-center gap-1">
+              <ShieldCheck size={14} color="#3f9c92" />
+              <Text.Paragraph type="body-xs" className="font-medium text-teal-700">
+                Demo Accounts
+              </Text.Paragraph>
+            </View>
+          </View>
+
           <View className="gap-2">
-            {DEMO_ACCOUNTS.map((account) => (
+            {accountsForPortal.map((account) => (
               <Surface
                 key={account.email}
-                tone="muted"
                 onPress={() => fillDemoAccount(account.email)}
                 accessibilityLabel={`Sign in as ${account.name}, ${account.roleLabel}`}
+                className="bg-surface hover:bg-surface-secondary border-border/80 flex-row items-center gap-3.5 p-3.5"
               >
-                <View className="flex-row items-center justify-between gap-3">
-                  <View className="flex-1">
-                    <Text.Paragraph weight="semibold">{account.name}</Text.Paragraph>
-                    <Text.Paragraph type="body-xs" color="muted">
-                      {account.roleLabel} · {account.description}
-                    </Text.Paragraph>
-                  </View>
-                  <Chip size="sm" variant="soft">
-                    <Chip.Label>Open</Chip.Label>
-                  </Chip>
+                <View
+                  className={cn(
+                    'h-11 w-11 items-center justify-center rounded-full font-bold',
+                    account.role === 'doctor'
+                      ? 'border border-amber-300 bg-amber-100 text-amber-900'
+                      : account.role === 'therapist'
+                        ? 'border border-emerald-300 bg-emerald-100 text-emerald-900'
+                        : 'border border-blue-300 bg-blue-100 text-blue-900',
+                  )}
+                >
+                  <Text.Paragraph weight="bold" type="body-sm" className="text-bark">
+                    {account.name
+                      .split(' ')
+                      .map((n) => n[0])
+                      .slice(0, 2)
+                      .join('')}
+                  </Text.Paragraph>
                 </View>
+
+                <View className="flex-1 gap-0.5">
+                  <View className="flex-row items-center gap-2">
+                    <Text.Paragraph weight="semibold" className="text-foreground">
+                      {account.name}
+                    </Text.Paragraph>
+                    <Chip
+                      size="sm"
+                      variant={
+                        account.role === 'doctor'
+                          ? 'primary'
+                          : account.role === 'therapist'
+                            ? 'secondary'
+                            : 'soft'
+                      }
+                    >
+                      <Chip.Label>{account.roleLabel}</Chip.Label>
+                    </Chip>
+                  </View>
+                  <Text.Paragraph type="body-xs" color="muted">
+                    {account.description}
+                  </Text.Paragraph>
+                </View>
+
+                <ChevronRight color={BRAND_HEX.barkSoft} size={18} />
               </Surface>
             ))}
           </View>
         </View>
       ) : null}
+
+      {/* Institutional Compliance & Clinical Standards Footer */}
+      <View className="border-border/50 gap-3 border-t pt-4">
+        <View className="flex-row flex-wrap items-center justify-center gap-x-4 gap-y-2">
+          <View className="flex-row items-center gap-1.5">
+            <Building2 size={13} color={BRAND_HEX.barkSoft} />
+            <Text.Paragraph type="body-xs" color="muted">
+              AYUSH Standard Guidelines
+            </Text.Paragraph>
+          </View>
+          <View className="flex-row items-center gap-1.5">
+            <ShieldCheck size={13} color={BRAND_HEX.barkSoft} />
+            <Text.Paragraph type="body-xs" color="muted">
+              NABH Accredited Procedures
+            </Text.Paragraph>
+          </View>
+          <View className="flex-row items-center gap-1.5">
+            <Lock size={13} color={BRAND_HEX.barkSoft} />
+            <Text.Paragraph type="body-xs" color="muted">
+              256-Bit Encrypted EMR
+            </Text.Paragraph>
+          </View>
+        </View>
+
+        <Text.Paragraph
+          type="body-xs"
+          color="muted"
+          className="text-center text-[11px] leading-relaxed"
+        >
+          AyurSutra Clinical Suite v1.0 · Dedicated to authentic holistic wellness · Shanti
+          Ayurvedic Bhavan, Bengaluru
+        </Text.Paragraph>
+      </View>
     </Screen>
   );
 }

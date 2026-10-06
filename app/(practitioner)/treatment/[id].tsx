@@ -8,6 +8,7 @@ import { Screen } from '@/components/ui/Screen';
 import { SessionCard } from '@/components/ui/SessionCard';
 import { StatTile } from '@/components/ui/StatTile';
 import { StatusChip } from '@/components/ui/StatusChip';
+import { Surface } from '@/components/ui/Surface';
 import { queryKeys } from '@/lib/api/keys';
 import { fetchTreatment, updateTreatmentSession } from '@/lib/api/treatments';
 import { formatDateShort } from '@/lib/format';
@@ -70,7 +71,7 @@ export default function TreatmentPlanScreen() {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <View className="gap-4 pb-1">
-            <View className="border-border bg-surface gap-2 rounded-2xl border p-4">
+            <Surface className="gap-2">
               <View className="flex-row items-center justify-between gap-3">
                 <Text.Paragraph weight="semibold" className="text-foreground">
                   {treatment.total_days}-day protocol
@@ -83,7 +84,7 @@ export default function TreatmentPlanScreen() {
               <Text.Paragraph type="body-xs" color="muted">
                 Started {formatDateShort(treatment.start_date)} · Supervised by {doctorName}
               </Text.Paragraph>
-            </View>
+            </Surface>
 
             <View className="flex-row gap-3">
               <StatTile label="Sessions" value={sessions.length} />
@@ -113,6 +114,7 @@ export default function TreatmentPlanScreen() {
             onStatusChange={(status: SessionStatus) =>
               updateSession.mutate({ treatmentId: treatment.id, sessionId: item.id, status })
             }
+            openPlanLabel="Patient record"
             onOpenPlan={() =>
               router.push({
                 pathname: '/(practitioner)/patient/[id]',

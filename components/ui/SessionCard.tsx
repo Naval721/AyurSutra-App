@@ -2,6 +2,7 @@ import { View } from 'react-native';
 import { Button, Text } from 'heroui-native';
 
 import { StatusChip } from '@/components/ui/StatusChip';
+import { Surface } from '@/components/ui/Surface';
 import { TREATMENT_STAGE_LABEL, formatRelativeDay } from '@/lib/format';
 import type { SessionStatus, TreatmentSession } from '@/lib/types';
 
@@ -36,6 +37,7 @@ export interface SessionCardProps {
   showDate?: boolean;
   onStatusChange?: (status: SessionStatus) => void;
   onOpenPlan?: () => void;
+  openPlanLabel?: string;
   busy?: boolean;
 }
 
@@ -46,10 +48,11 @@ export function SessionCard({
   showDate = false,
   onStatusChange,
   onOpenPlan,
+  openPlanLabel = 'View plan',
   busy = false,
 }: SessionCardProps) {
   return (
-    <View className="border-border bg-surface gap-3 rounded-2xl border p-4">
+    <Surface className="gap-3">
       <View className="flex-row items-start gap-3">
         <View className="bg-saffron-soft h-11 w-11 items-center justify-center rounded-xl">
           <Text.Paragraph type="body-xs" className="text-bark">
@@ -92,25 +95,30 @@ export function SessionCard({
       {onStatusChange || onOpenPlan ? (
         <View className="flex-row flex-wrap gap-2">
           {onStatusChange
-            ? actionsFor(session.status).map((action) => (
-                <Button
-                  key={action.status}
-                  size="sm"
-                  variant={action.status === 'completed' ? 'primary' : 'secondary'}
-                  isDisabled={busy}
-                  onPress={() => onStatusChange(action.status)}
-                >
-                  <Button.Label>{action.label}</Button.Label>
-                </Button>
-              ))
+            ? actionsFor(session.status).map((action) => {
+                const isPrimary =
+                  (session.status === 'pending' && action.status === 'in_progress') ||
+                  (session.status === 'in_progress' && action.status === 'completed');
+                return (
+                  <Button
+                    key={action.status}
+                    size="sm"
+                    variant={isPrimary ? 'primary' : 'secondary'}
+                    isDisabled={busy}
+                    onPress={() => onStatusChange(action.status)}
+                  >
+                    <Button.Label>{action.label}</Button.Label>
+                  </Button>
+                );
+              })
             : null}
           {onOpenPlan ? (
             <Button size="sm" variant="tertiary" onPress={onOpenPlan}>
-              <Button.Label>View plan</Button.Label>
+              <Button.Label>{openPlanLabel}</Button.Label>
             </Button>
           ) : null}
         </View>
       ) : null}
-    </View>
+    </Surface>
   );
 }

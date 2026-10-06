@@ -64,6 +64,16 @@ export const TREATMENT_STAGE_LABEL: Record<TreatmentStage, string> = {
   paschat_karma: 'Paschat Karma',
 };
 
+export function formatHour(hour: number): string {
+  const period = hour >= 12 ? 'PM' : 'AM';
+  const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+  return `${displayHour}:00 ${period}`;
+}
+
+export function formatHourRange(startHour: number, endHour: number): string {
+  return `${formatHour(startHour)} – ${formatHour(endHour)}`;
+}
+
 export function titleCase(value: string): string {
   return value
     .split(/[\s_]+/)

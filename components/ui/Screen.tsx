@@ -1,11 +1,5 @@
 import type { ReactNode } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  RefreshControl,
-  ScrollView,
-  View,
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, RefreshControl, ScrollView, View } from 'react-native';
 import { ChevronLeft } from 'lucide-react-native';
 import { PressableFeedback, Text, useThemeColor } from 'heroui-native';
 import type { Href } from 'expo-router';

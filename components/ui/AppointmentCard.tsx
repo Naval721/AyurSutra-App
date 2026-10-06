@@ -1,12 +1,13 @@
 import { View } from 'react-native';
-import { PressableFeedback, Text } from 'heroui-native';
+import { Text } from 'heroui-native';
 import { ChevronRight } from 'lucide-react-native';
 
 import { StatusChip } from '@/components/ui/StatusChip';
 import { Surface } from '@/components/ui/Surface';
-import { APPOINTMENT_TYPE_LABEL, formatTime } from '@/lib/format';
+import { APPOINTMENT_TYPE_LABEL, formatRelativeDay, formatTime, initials } from '@/lib/format';
 import { BRAND_HEX } from '@/lib/theme';
 import type { Appointment, Patient } from '@/lib/types';
+import { cn } from '@/lib/utils';
 
 export interface AppointmentCardProps {
   appointment: Appointment;
@@ -15,6 +16,8 @@ export interface AppointmentCardProps {
   personName?: string;
   onPress?: () => void;
   showChevron?: boolean;
+  /** Displays relative date (e.g. Today, Tomorrow, Mon 14 Apr) above the time slot. */
+  showDate?: boolean;
 }
 
 export function AppointmentCard({
@@ -23,13 +26,29 @@ export function AppointmentCard({
   personName,
   onPress,
   showChevron = true,
+  showDate = false,
 }: AppointmentCardProps) {
   const name = patient?.full_name ?? personName ?? 'Appointment';
   const dimmed = appointment.status === 'cancelled' || appointment.status === 'no_show';
 
-  const body = (
-    <Surface className="flex-row items-center gap-3">
-      <View className="border-border w-[74px] border-r pr-3">
+  return (
+    <Surface
+      onPress={onPress}
+      accessibilityLabel={`Open appointment with ${name}`}
+      className={cn('flex-row items-center gap-3.5 p-3.5', dimmed && 'opacity-60')}
+    >
+      {/* Time & Date Column */}
+      <View className={cn('border-border border-r pr-3', showDate ? 'w-[92px]' : 'w-[76px]')}>
+        {showDate ? (
+          <Text.Paragraph
+            type="body-xs"
+            weight="semibold"
+            className="mb-0.5 text-amber-800"
+            numberOfLines={1}
+          >
+            {formatRelativeDay(appointment.starts_at)}
+          </Text.Paragraph>
+        ) : null}
         <Text.Paragraph type="body-sm" weight="semibold" className="text-foreground">
           {formatTime(appointment.starts_at)}
         </Text.Paragraph>
@@ -38,7 +57,15 @@ export function AppointmentCard({
         </Text.Paragraph>
       </View>
 
-      <View className="flex-1 gap-1">
+      {/* Patient / Doctor Avatar Ring */}
+      <View className="h-10 w-10 items-center justify-center rounded-full border border-amber-200/80 bg-amber-100">
+        <Text.Paragraph type="body-xs" weight="bold" className="text-amber-900">
+          {initials(name)}
+        </Text.Paragraph>
+      </View>
+
+      {/* Details & Status */}
+      <View className="flex-1 gap-0.5">
         <Text.Paragraph weight="semibold" className="text-foreground" numberOfLines={1}>
           {name}
         </Text.Paragraph>
@@ -51,21 +78,7 @@ export function AppointmentCard({
         </View>
       </View>
 
-      {showChevron ? <ChevronRight color={BRAND_HEX.barkSoft} size={18} /> : null}
+      {showChevron && onPress ? <ChevronRight color={BRAND_HEX.barkSoft} size={18} /> : null}
     </Surface>
-  );
-
-  const wrapped = <View style={dimmed ? { opacity: 0.55 } : undefined}>{body}</View>;
-
-  if (!onPress) return wrapped;
-
-  return (
-    <PressableFeedback
-      accessibilityRole="button"
-      accessibilityLabel={`Open ${name}`}
-      onPress={onPress}
-    >
-      {wrapped}
-    </PressableFeedback>
   );
 }

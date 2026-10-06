@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Button, Input, Label, PressableFeedback, Text, TextField } from 'heroui-native';
+import { router } from 'expo-router';
+import { Button, Chip, Input, Label, PressableFeedback, Text, TextField } from 'heroui-native';
 
 import { DateStrip } from '@/components/ui/DateStrip';
 import { EmptyState, LoadingState } from '@/components/ui/States';
@@ -11,7 +12,7 @@ import { Surface } from '@/components/ui/Surface';
 import { bookAppointment, fetchSlots } from '@/lib/api/appointments';
 import { fetchStaff } from '@/lib/api/auth';
 import { queryKeys } from '@/lib/api/keys';
-import { APPOINTMENT_TYPE_LABEL, formatDateLong, formatTime, toYmd } from '@/lib/format';
+import { APPOINTMENT_TYPE_LABEL, formatDateLong, formatTime, initials, toYmd } from '@/lib/format';
 import { tapError, tapSelection, tapSuccess } from '@/lib/haptics';
 import { useSessionStore } from '@/lib/store/session';
 import type { AppointmentType, BookingSlot } from '@/lib/types';
@@ -142,7 +143,7 @@ export default function PatientBookScreen() {
         {staffQuery.isPending ? (
           <LoadingState label="Loading doctors" />
         ) : (
-          <View className="gap-2">
+          <View className="gap-2.5">
             {doctors.map((doctor) => {
               const selected = doctor.id === activeDoctorId;
               return (
@@ -159,22 +160,28 @@ export default function PatientBookScreen() {
                 >
                   <View
                     className={cn(
-                      'flex-row items-center gap-3 rounded-2xl border p-4',
-                      selected ? 'border-accent bg-saffron-soft' : 'border-border bg-surface',
+                      'flex-row items-center gap-3.5 rounded-2xl border p-4 shadow-xs',
+                      selected ? 'border-accent bg-amber-50/70' : 'border-border bg-surface',
                     )}
                   >
+                    <View className="h-11 w-11 items-center justify-center rounded-full border border-amber-300 bg-amber-100">
+                      <Text.Paragraph type="body-sm" weight="bold" className="text-amber-900">
+                        {initials(doctor.full_name)}
+                      </Text.Paragraph>
+                    </View>
                     <View className="flex-1">
                       <Text.Paragraph weight="semibold" className="text-foreground">
                         {doctor.full_name}
                       </Text.Paragraph>
                       <Text.Paragraph type="body-xs" color="muted">
+                        {doctor.qualification ? `${doctor.qualification} · ` : ''}
                         {doctor.specialisation ?? 'Ayurvedic physician'}
                       </Text.Paragraph>
                     </View>
                     {doctor.id === patient.primary_doctor_id ? (
-                      <Text.Paragraph type="body-xs" color="muted">
-                        Your doctor
-                      </Text.Paragraph>
+                      <Chip size="sm" variant="soft">
+                        <Chip.Label>Primary</Chip.Label>
+                      </Chip>
                     ) : null}
                   </View>
                 </PressableFeedback>
@@ -224,7 +231,11 @@ export default function PatientBookScreen() {
       <View className="px-5">
         <SectionHeader
           title="Available times"
-          caption={`${available.length} open on ${formatDateLong(date)}`}
+          caption={
+            available.length > 0
+              ? `${available.length} open on ${formatDateLong(date)}`
+              : `All slots booked or passed for ${formatDateLong(date)}`
+          }
         />
         {slotsQuery.isPending ? (
           <LoadingState label="Checking availability" />
@@ -234,6 +245,13 @@ export default function PatientBookScreen() {
             message="The clinic does not take bookings on this day. Please pick another date."
             className="py-8"
           />
+        ) : available.length === 0 ? (
+          <Surface className="mb-2">
+            <Text.Paragraph type="body-sm" color="muted">
+              No open slots remain for {formatDateLong(date)}. Please select another day above to
+              see available appointments.
+            </Text.Paragraph>
+          </Surface>
         ) : (
           <View className="flex-row flex-wrap gap-2">
             {slots.map((entry) => {
@@ -294,22 +312,27 @@ export default function PatientBookScreen() {
         </TextField>
 
         {confirmation ? (
-          <Surface tone="accent">
+          <Surface tone="accent" className="gap-2">
             <Text.Paragraph type="body-sm" weight="semibold" className="text-bark">
               Appointment confirmed
             </Text.Paragraph>
             <Text.Paragraph type="body-xs" className="text-bark">
-              {confirmation}. It is now on the clinic calendar and your doctor's roster.
+              {confirmation}. It is now on the clinic calendar and your doctor&apos;s roster.
             </Text.Paragraph>
+            <View className="mt-1 flex-row gap-2">
+              <Button
+                size="sm"
+                variant="secondary"
+                onPress={() => router.push('/(patient)/(tabs)/records')}
+              >
+                <Button.Label>View in Records</Button.Label>
+              </Button>
+            </View>
           </Surface>
         ) : null}
 
         {error ? (
-          <Text.Paragraph
-            type="body-sm"
-            className="text-danger"
-            accessibilityLiveRegion="polite"
-          >
+          <Text.Paragraph type="body-sm" className="text-danger" accessibilityLiveRegion="polite">
             {error}
           </Text.Paragraph>
         ) : null}

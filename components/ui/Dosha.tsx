@@ -46,7 +46,7 @@ export function DoshaBar({ scores, showLegend = true, className }: DoshaBarProps
 }
 
 export interface DoshaBadgeProps {
-  dosha: Dosha;
+  dosha?: Dosha;
   /** Overrides the label, e.g. "Vata-Pitta" for a dual constitution. */
   label?: string;
   withElement?: boolean;
@@ -54,14 +54,19 @@ export interface DoshaBadgeProps {
 }
 
 /** Compact constitution tag used on patient rows and headers. */
-export function DoshaBadge({ dosha, label, withElement = false, className }: DoshaBadgeProps) {
-  const tone = DOSHA_CLASS[dosha];
+export function DoshaBadge({
+  dosha = 'vata',
+  label,
+  withElement = false,
+  className,
+}: DoshaBadgeProps) {
+  const tone = DOSHA_CLASS[dosha] ?? DOSHA_CLASS.vata;
 
   return (
     <View className={cn('self-start rounded-full px-2.5 py-1', tone.softBg, className)}>
       <Text.Paragraph type="body-xs" weight="semibold" className={tone.text}>
-        {label ?? DOSHA_LABEL[dosha]}
-        {withElement ? ` · ${DOSHA_ELEMENT[dosha]}` : ''}
+        {label ?? DOSHA_LABEL[dosha] ?? 'Vata'}
+        {withElement && DOSHA_ELEMENT[dosha] ? ` · ${DOSHA_ELEMENT[dosha]}` : ''}
       </Text.Paragraph>
     </View>
   );

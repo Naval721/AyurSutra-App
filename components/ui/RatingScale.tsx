@@ -1,6 +1,7 @@
 import { View } from 'react-native';
 import { PressableFeedback, Text } from 'heroui-native';
 
+import { tapSelection } from '@/lib/haptics';
 import type { Rating } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
@@ -30,7 +31,10 @@ export function RatingScale({ label, value, onChange, hint }: RatingScaleProps) 
               accessibilityRole="button"
               accessibilityLabel={`${label}: ${option} of 5`}
               accessibilityState={{ selected }}
-              onPress={() => onChange(option)}
+              onPress={() => {
+                tapSelection();
+                onChange(option);
+              }}
               className={cn(
                 'h-11 flex-1 items-center justify-center rounded-xl border',
                 selected ? 'bg-accent border-accent' : 'bg-surface border-border',

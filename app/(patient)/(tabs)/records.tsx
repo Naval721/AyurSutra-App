@@ -127,6 +127,7 @@ function RecordsBody({ patientId }: { patientId: string }) {
                         </Text.Paragraph>
                       </View>
                       <StatusChip kind="treatment" status={record.treatment.status} />
+                      <ChevronRight color={BRAND_HEX.barkSoft} size={18} />
                     </View>
                     <Text.Paragraph type="body-xs" color="muted">
                       {record.completedSessions} of {record.treatment.sessions.length} sessions done
@@ -213,6 +214,7 @@ function RecordsBody({ patientId }: { patientId: string }) {
                     appointment={entry.appointment}
                     personName={entry.doctorName}
                     showChevron={false}
+                    showDate
                   />
                 ))}
               </View>

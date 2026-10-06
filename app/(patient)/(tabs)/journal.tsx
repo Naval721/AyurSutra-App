@@ -91,19 +91,21 @@ export default function JournalScreen() {
             />
           }
           ListHeaderComponent={
-            <View className="flex-row gap-3 pb-1">
-              <StatTile label="Entries" value={logs.length} caption="All time" />
-              <StatTile
-                label="Digestion"
-                value={average(recent.map((log) => log.digestion))}
-                caption="Last 7 logs"
-              />
-              <StatTile
-                label="Sleep"
-                value={average(recent.map((log) => log.sleep_hours))}
-                caption="Hours avg"
-              />
-            </View>
+            logs.length > 0 ? (
+              <View className="flex-row gap-3 pb-1">
+                <StatTile label="Entries" value={logs.length} caption="All time" />
+                <StatTile
+                  label="Digestion"
+                  value={average(recent.map((log) => log.digestion))}
+                  caption={recent.length === 7 ? 'Last 7 logs' : `Last ${recent.length} logs`}
+                />
+                <StatTile
+                  label="Sleep"
+                  value={average(recent.map((log) => log.sleep_hours))}
+                  caption="Hours avg"
+                />
+              </View>
+            ) : null
           }
           ListEmptyComponent={
             <EmptyState

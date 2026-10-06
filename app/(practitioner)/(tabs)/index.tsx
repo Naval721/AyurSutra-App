@@ -47,7 +47,6 @@ export default function PractitionerHomeScreen() {
     },
   });
 
-  const firstName = session?.profile.full_name.split(' ').slice(0, 2).join(' ') ?? '';
   const query = isTherapist ? tasksQuery : rosterQuery;
 
   const roster = rosterQuery.data ?? [];
@@ -79,8 +78,8 @@ export default function PractitionerHomeScreen() {
 
   return (
     <Screen
-      title={isTherapist ? 'Therapy tasks' : 'Daily roster'}
-      subtitle={`${firstName} · ${formatRelativeDay(date)}`}
+      title={isTherapist ? 'Therapy Schedule' : 'Clinical Consultations'}
+      subtitle={`${session?.profile.full_name ?? ''} · ${formatRelativeDay(date)}`}
       padded={false}
     >
       <View className="pb-3">

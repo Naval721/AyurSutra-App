@@ -6,6 +6,7 @@ import { Button, Chip, Input, Label, Text, TextArea, TextField } from 'heroui-na
 import { Surface } from '@/components/ui/Surface';
 import { addClinicalNote } from '@/lib/api/patients';
 import { queryKeys } from '@/lib/api/keys';
+import { tapSuccess } from '@/lib/haptics';
 import { DOSHA_LABEL } from '@/lib/theme';
 import type { ClinicalNoteKind, Dosha } from '@/lib/types';
 
@@ -32,16 +33,24 @@ export function NoteComposer({ patientId, authorId, authorName }: NoteComposerPr
   const [rate, setRate] = useState('');
   const [quality, setQuality] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [savedSuccess, setSavedSuccess] = useState(false);
 
   const save = useMutation({
     mutationFn: addClinicalNote,
     onSuccess: () => {
+      tapSuccess();
       setBody('');
       setRate('');
       setQuality('');
+      setError(null);
+      setSavedSuccess(true);
       void queryClient.invalidateQueries({ queryKey: queryKeys.patient(patientId) });
+      void queryClient.invalidateQueries({ queryKey: ['patients'] });
     },
-    onError: (mutationError: Error) => setError(mutationError.message),
+    onError: (mutationError: Error) => {
+      setSavedSuccess(false);
+      setError(mutationError.message);
+    },
   });
 
   const submit = () => {
@@ -77,7 +86,7 @@ export function NoteComposer({ patientId, authorId, authorName }: NoteComposerPr
   };
 
   return (
-    <View className="border-border bg-surface gap-4 rounded-2xl border p-4">
+    <Surface className="gap-4">
       <View>
         <Label className="mb-2">Note type</Label>
         <View className="flex-row flex-wrap gap-2">
@@ -135,9 +144,20 @@ export function NoteComposer({ patientId, authorId, authorName }: NoteComposerPr
         <TextArea
           placeholder="Pulse felt at the index finger, Vata prominent. Advised warm oil abhyanga before bath."
           value={body}
-          onChangeText={setBody}
+          onChangeText={(text) => {
+            if (savedSuccess) setSavedSuccess(false);
+            setBody(text);
+          }}
         />
       </TextField>
+
+      {savedSuccess ? (
+        <View className="bg-success-soft border-success/20 rounded-xl border px-3.5 py-2.5">
+          <Text.Paragraph type="body-sm" className="text-success font-medium">
+            Clinical note added to patient record.
+          </Text.Paragraph>
+        </View>
+      ) : null}
 
       {error ? (
         <Text.Paragraph type="body-sm" className="text-danger">
@@ -148,6 +168,6 @@ export function NoteComposer({ patientId, authorId, authorName }: NoteComposerPr
       <Button isDisabled={save.isPending} onPress={submit}>
         <Button.Label>{save.isPending ? 'Saving' : 'Save note'}</Button.Label>
       </Button>
-    </View>
+    </Surface>
   );
 }

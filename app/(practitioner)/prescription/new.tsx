@@ -18,6 +18,7 @@ import { Trash2 } from 'lucide-react-native';
 import { EmptyState, LoadingState } from '@/components/ui/States';
 import { Screen } from '@/components/ui/Screen';
 import { SectionHeader } from '@/components/ui/SectionHeader';
+import { Surface } from '@/components/ui/Surface';
 import { queryKeys } from '@/lib/api/keys';
 import { fetchPatient, fetchPatients } from '@/lib/api/patients';
 import { createPrescription, searchFormulary } from '@/lib/api/prescriptions';
@@ -138,13 +139,20 @@ export default function NewPrescriptionScreen() {
       keyboardAware
       contentClassName="gap-6"
       footer={
-        <Button isDisabled={issue.isPending} onPress={submit}>
-          <Button.Label>{issue.isPending ? 'Issuing' : 'Issue prescription'}</Button.Label>
-        </Button>
+        <View className="gap-2">
+          {error ? (
+            <Text.Paragraph type="body-sm" className="text-danger">
+              {error}
+            </Text.Paragraph>
+          ) : null}
+          <Button isDisabled={issue.isPending} onPress={submit}>
+            <Button.Label>{issue.isPending ? 'Issuing' : 'Issue prescription'}</Button.Label>
+          </Button>
+        </View>
       }
     >
       {patientId ? (
-        <View className="border-border bg-surface flex-row items-center gap-3 rounded-2xl border p-4">
+        <Surface className="flex-row items-center gap-3">
           <View className="flex-1">
             {patientQuery.isPending ? (
               <Text.Paragraph type="body-sm" color="muted">
@@ -164,7 +172,7 @@ export default function NewPrescriptionScreen() {
           <Button size="sm" variant="tertiary" onPress={() => setPatientId('')}>
             <Button.Label>Change</Button.Label>
           </Button>
-        </View>
+        </Surface>
       ) : (
         <View>
           <SectionHeader title="Patient" caption="Who is this prescription for?" />
@@ -181,21 +189,18 @@ export default function NewPrescriptionScreen() {
               <LoadingState label="Loading patients" />
             ) : (
               (directoryQuery.data ?? []).map((summary) => (
-                <PressableFeedback
+                <Surface
                   key={summary.patient.id}
-                  accessibilityRole="button"
                   accessibilityLabel={`Select ${summary.patient.full_name}`}
                   onPress={() => setPatientId(summary.patient.id)}
                 >
-                  <View className="border-border bg-surface rounded-2xl border p-4">
-                    <Text.Paragraph weight="semibold" className="text-foreground">
-                      {summary.patient.full_name}
-                    </Text.Paragraph>
-                    <Text.Paragraph type="body-xs" color="muted" numberOfLines={1}>
-                      {summary.patient.chief_complaint}
-                    </Text.Paragraph>
-                  </View>
-                </PressableFeedback>
+                  <Text.Paragraph weight="semibold" className="text-foreground">
+                    {summary.patient.full_name}
+                  </Text.Paragraph>
+                  <Text.Paragraph type="body-xs" color="muted" numberOfLines={1}>
+                    {summary.patient.chief_complaint}
+                  </Text.Paragraph>
+                </Surface>
               ))
             )}
           </View>
@@ -216,33 +221,33 @@ export default function NewPrescriptionScreen() {
           {results.map((entry) => {
             const added = chosenNames.has(entry.name);
             return (
-              <PressableFeedback
+              <Surface
                 key={entry.id}
-                accessibilityRole="button"
-                accessibilityLabel={`Add ${entry.name}`}
-                accessibilityState={{ selected: added }}
+                className="flex-row items-center gap-3"
+                accessibilityLabel={added ? `Remove ${entry.name}` : `Add ${entry.name}`}
                 onPress={() => {
-                  if (added) return;
-                  setItems((current) => [...current, draftFrom(entry)]);
+                  if (added) {
+                    setItems((current) => current.filter((item) => item.name !== entry.name));
+                  } else {
+                    setItems((current) => [...current, draftFrom(entry)]);
+                  }
                 }}
               >
-                <View className="border-border bg-surface flex-row items-center gap-3 rounded-2xl border p-4">
-                  <View className="flex-1 gap-1">
-                    <Text.Paragraph weight="semibold" className="text-foreground">
-                      {entry.name}
-                    </Text.Paragraph>
-                    <Text.Paragraph type="body-xs" color="muted">
-                      {entry.form} · {entry.category}
-                    </Text.Paragraph>
-                    <Text.Paragraph type="body-xs" color="muted" numberOfLines={1}>
-                      {entry.indications.join(', ')}
-                    </Text.Paragraph>
-                  </View>
-                  <Chip size="sm" variant={added ? 'primary' : 'secondary'} disabled>
-                    <Chip.Label>{added ? 'Added' : 'Add'}</Chip.Label>
-                  </Chip>
+                <View className="flex-1 gap-1">
+                  <Text.Paragraph weight="semibold" className="text-foreground">
+                    {entry.name}
+                  </Text.Paragraph>
+                  <Text.Paragraph type="body-xs" color="muted">
+                    {entry.form} · {entry.category}
+                  </Text.Paragraph>
+                  <Text.Paragraph type="body-xs" color="muted" numberOfLines={1}>
+                    {entry.indications.join(', ')}
+                  </Text.Paragraph>
                 </View>
-              </PressableFeedback>
+                <Chip size="sm" variant={added ? 'primary' : 'secondary'}>
+                  <Chip.Label>{added ? 'Added' : 'Add'}</Chip.Label>
+                </Chip>
+              </Surface>
             );
           })}
           {results.length === 0 ? (
@@ -261,18 +266,15 @@ export default function NewPrescriptionScreen() {
           caption="Adjust dosage, frequency, duration and anupana"
         />
         {items.length === 0 ? (
-          <View className="border-border bg-surface rounded-2xl border p-4">
+          <Surface>
             <Text.Paragraph type="body-sm" color="muted">
               No medicines added yet. Pick them from the formulary above.
             </Text.Paragraph>
-          </View>
+          </Surface>
         ) : (
           <View className="gap-3">
             {items.map((item) => (
-              <View
-                key={item.key}
-                className="border-border bg-surface gap-3 rounded-2xl border p-4"
-              >
+              <Surface key={item.key} className="gap-3">
                 <View className="flex-row items-center gap-3">
                   <View className="flex-1">
                     <Text.Paragraph weight="semibold" className="text-foreground">
@@ -285,7 +287,8 @@ export default function NewPrescriptionScreen() {
                   <PressableFeedback
                     accessibilityRole="button"
                     accessibilityLabel={`Remove ${item.name}`}
-                    className="h-9 w-9 items-center justify-center rounded-full"
+                    className="h-11 w-11 items-center justify-center rounded-full"
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                     onPress={() =>
                       setItems((current) => current.filter((entry) => entry.key !== item.key))
                     }
@@ -340,7 +343,7 @@ export default function NewPrescriptionScreen() {
                     onChangeText={(value) => updateItem(item.key, { instructions: value })}
                   />
                 </TextField>
-              </View>
+              </Surface>
             ))}
           </View>
         )}
@@ -372,12 +375,6 @@ export default function NewPrescriptionScreen() {
           />
         </TextField>
       </View>
-
-      {error ? (
-        <Text.Paragraph type="body-sm" className="text-danger">
-          {error}
-        </Text.Paragraph>
-      ) : null}
     </Screen>
   );
 }

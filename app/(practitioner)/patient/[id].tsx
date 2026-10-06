@@ -97,20 +97,22 @@ export default function PatientRecordScreen() {
           </Text.Paragraph>
         </View>
 
-        <View className="flex-row gap-2">
-          <Button
-            size="sm"
-            className="flex-1"
-            onPress={() =>
-              router.push({
-                pathname: '/(practitioner)/prescription/new',
-                params: { patientId: patient.id },
-              })
-            }
-          >
-            <Button.Label>Prescribe</Button.Label>
-          </Button>
-        </View>
+        {session?.profile.role !== 'therapist' ? (
+          <View className="flex-row gap-2">
+            <Button
+              size="sm"
+              className="flex-1"
+              onPress={() =>
+                router.push({
+                  pathname: '/(practitioner)/prescription/new',
+                  params: { patientId: patient.id },
+                })
+              }
+            >
+              <Button.Label>Prescribe</Button.Label>
+            </Button>
+          </View>
+        ) : null}
       </Surface>
 
       <View>
@@ -289,10 +291,12 @@ export default function PatientRecordScreen() {
         ) : null}
       </View>
 
-      <Text.Paragraph type="body-xs" color="muted">
-        {DOSHA_LABEL.vata}, {DOSHA_LABEL.pitta} and {DOSHA_LABEL.kapha} percentages come from the
-        patient{"'"}s most recent assessment.
-      </Text.Paragraph>
+      {latest ? (
+        <Text.Paragraph type="body-xs" color="muted">
+          {DOSHA_LABEL.vata}, {DOSHA_LABEL.pitta} and {DOSHA_LABEL.kapha} percentages come from the
+          patient{"'"}s most recent assessment.
+        </Text.Paragraph>
+      ) : null}
     </Screen>
   );
 }

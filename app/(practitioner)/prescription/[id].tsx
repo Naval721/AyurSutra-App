@@ -11,10 +11,13 @@ import { Surface } from '@/components/ui/Surface';
 import { queryKeys } from '@/lib/api/keys';
 import { fetchPrescription, markPrescriptionCompleted } from '@/lib/api/prescriptions';
 import { formatDateLong } from '@/lib/format';
+import { useSessionStore } from '@/lib/store/session';
 
 export default function PrescriptionDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const session = useSessionStore((state) => state.session);
   const queryClient = useQueryClient();
+  const isTherapist = session?.profile.role === 'therapist';
 
   const prescriptionQuery = useQuery({
     queryKey: queryKeys.prescription(id),
@@ -60,11 +63,9 @@ export default function PrescriptionDetailScreen() {
       scroll
       contentClassName="gap-6"
       footer={
-        prescription.status === 'active' ? (
+        isTherapist ? undefined : prescription.status === 'active' ? (
           <Button isDisabled={complete.isPending} onPress={() => complete.mutate()}>
-            <Button.Label>
-              {complete.isPending ? 'Updating' : 'Mark course completed'}
-            </Button.Label>
+            <Button.Label>{complete.isPending ? 'Updating' : 'Mark course completed'}</Button.Label>
           </Button>
         ) : (
           <Button
