@@ -17,6 +17,7 @@ import {
 
 import { Screen } from '@/components/ui/Screen';
 import { Surface } from '@/components/ui/Surface';
+import { Logo } from '@/components/ui/Logo';
 import { DEMO_ACCOUNTS, DEMO_PASSWORD } from '@/lib/api/auth';
 import { tapSelection } from '@/lib/haptics';
 import { BRAND_HEX } from '@/lib/theme';
@@ -55,16 +56,14 @@ export default function SignInScreen() {
       {/* Clinic Masthead & Heritage Emblem */}
       <View className="pt-safe-offset-4 items-center text-center">
         <View className="relative items-center justify-center">
-          <View className="h-20 w-20 items-center justify-center rounded-3xl border border-amber-300/60 bg-amber-50 shadow-sm">
-            <View className="h-14 w-14 items-center justify-center rounded-2xl bg-[#dd8c2d]/15">
-              <Sparkles color={BRAND_HEX.saffron} size={28} />
-            </View>
+          <View className="h-24 w-24 items-center justify-center rounded-3xl border border-emerald-100/60 bg-emerald-50/30 shadow-md">
+            <Logo size={56} />
           </View>
-          <View className="absolute -bottom-2 rounded-full border border-amber-200 bg-white px-2.5 py-0.5 shadow-xs">
+          <View className="absolute -bottom-2 rounded-full border border-emerald-200 bg-white px-3 py-0.5 shadow-sm">
             <Text.Paragraph
               type="body-xs"
               weight="bold"
-              className="tracking-widest text-[#6b5843] uppercase"
+              className="tracking-widest text-emerald-800 uppercase"
             >
               आयुःसूत्र
             </Text.Paragraph>

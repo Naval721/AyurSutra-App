@@ -7,8 +7,8 @@ import { cn } from '@/lib/utils';
 type SurfaceTone = 'default' | 'accent' | 'muted';
 
 const TONE: Record<SurfaceTone, string> = {
-  default: 'border-border bg-surface',
-  accent: 'border-accent bg-saffron-soft',
+  default: 'border-border bg-surface shadow-sm',
+  accent: 'border-accent bg-emerald-50/50 shadow-md', // Update accent to match new emerald theme
   muted: 'border-border bg-surface-secondary',
 };
 

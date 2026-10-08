@@ -18,12 +18,14 @@ export const DOSHA_SOFT_HEX: Record<Dosha, string> = {
 };
 
 export const BRAND_HEX = {
-  bark: '#4a3b2c',
-  barkSoft: '#6b5843',
-  saffron: '#dd8c2d',
-  saffronSoft: '#fbe6c8',
+  bark: '#334155', // slate-700
+  barkSoft: '#64748b', // slate-500
+  saffron: '#dd8c2d', // keep warm accent
+  saffronSoft: '#fdf6ed', // very light saffron
   turmeric: '#efb135',
-  cream: '#faf3e7',
+  cream: '#f8fafc', // slate-50
+  emerald: '#0f766e', // teal-700 primary
+  emeraldDark: '#042f2e', // teal-900
 } as const;
 
 export const DOSHA_LABEL: Record<Dosha, string> = {

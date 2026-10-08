@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 250" width="100%" height="250">
+  <defs>
+    <style>
+      @keyframes scanline {
+        0% { transform: translateY(-100%); }
+        100% { transform: translateY(100%); }
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 0.8; filter: drop-shadow(0 0 8px #0f766e); }
+        50% { opacity: 1; filter: drop-shadow(0 0 15px #0f766e); }
+      }
+      @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      @keyframes textGlitch {
+        0%, 100% { transform: translate(0); }
+        20% { transform: translate(-2px, 1px); }
+        40% { transform: translate(2px, -1px); }
+        60% { transform: translate(-1px, 2px); }
+        80% { transform: translate(1px, -2px); }
+      }
+      .bg { fill: #040d12; }
+      .grid { stroke: #0f766e; stroke-width: 1; opacity: 0.15; }
+      .core-element { 
+        transform-origin: 400px 125px; 
+        animation: rotate 20s linear infinite, pulse 4s ease-in-out infinite; 
+      }
+      .text-title {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 42px;
+        font-weight: 800;
+        fill: #f8fafc;
+        letter-spacing: 14px;
+        animation: textGlitch 5s infinite step-end;
+      }
+      .text-sub {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 13px;
+        font-weight: 600;
+        fill: #0f766e;
+        letter-spacing: 6px;
+      }
+      .scanline {
+        fill: url(#gradScan);
+        opacity: 0.15;
+        animation: scanline 4s linear infinite;
+        pointer-events: none;
+      }
+    </style>
+    <linearGradient id="gradScan" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="transparent" />
+      <stop offset="50%" stop-color="#0f766e" />
+      <stop offset="100%" stop-color="transparent" />
+    </linearGradient>
+    <pattern id="gridPattern" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" class="grid" />
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="100%" height="100%" class="bg" />
+  <rect width="100%" height="100%" fill="url(#gridPattern)" />
+
+  <!-- Animated Geometry (HUD style) -->
+  <g class="core-element">
+    <circle cx="400" cy="125" r="100" fill="none" stroke="#0f766e" stroke-width="1.5" stroke-dasharray="8 12" />
+    <circle cx="400" cy="125" r="85" fill="none" stroke="#0f766e" stroke-width="1" opacity="0.4" />
+    <circle cx="400" cy="125" r="70" fill="none" stroke="#0f766e" stroke-width="3" stroke-dasharray="30 60" />
+    
+    <!-- Sacred Geometry / Yantra influence -->
+    <polygon points="400,45 469,165 331,165" fill="none" stroke="#0f766e" stroke-width="1.5" opacity="0.6"/>
+    <polygon points="400,205 331,85 469,85" fill="none" stroke="#0f766e" stroke-width="1.5" opacity="0.6"/>
+  </g>
+
+  <!-- Corner Brackets -->
+  <path d="M 30,50 L 30,30 L 50,30" fill="none" stroke="#0f766e" stroke-width="2" opacity="0.5" />
+  <path d="M 770,50 L 770,30 L 750,30" fill="none" stroke="#0f766e" stroke-width="2" opacity="0.5" />
+  <path d="M 30,200 L 30,220 L 50,220" fill="none" stroke="#0f766e" stroke-width="2" opacity="0.5" />
+  <path d="M 770,200 L 770,220 L 750,220" fill="none" stroke="#0f766e" stroke-width="2" opacity="0.5" />
+
+  <!-- Typography -->
+  <text x="408" y="132" text-anchor="middle" class="text-title">AYURSUTRA</text>
+  <text x="403" y="162" text-anchor="middle" class="text-sub">CLINICAL OPERATING SYSTEM</text>
+
+  <!-- Overlay Scanline -->
+  <rect width="100%" height="250" class="scanline" />
+</svg>
